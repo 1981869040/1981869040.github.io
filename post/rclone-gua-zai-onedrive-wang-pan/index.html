@@ -1,0 +1,326 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<title>Rclone 挂载 OneDrive 网盘 | 杨 - 个人博客</title>
+
+<link rel="shortcut icon" href="https://1981869040.github.io/favicon.ico?v=1657201145302">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://1981869040.github.io/styles/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            杨 - 个人博客
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657201145302" action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Rclone 挂载 OneDrive 网盘
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-07-07 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="说明">说明</h1>
+<p>本教程只适用Debian/Ubuntu系统，如果你是CentOS或者其它Linux系统，请使用以下命令安装rclone：</p>
+<pre><code>curl https://rclone.org/install.sh | sudo bash
+</code></pre>
+<h1 id="客户端授权">客户端授权</h1>
+<p>在本地Windows电脑上下载rclone，下载地址：<a href="https://rclone.org/downloads/">https://rclone.org/downloads/</a>。然后解压出来，比如我解压到D盘，文件夹命名rclone，此时点击Win+R，然后输入cmd，确定。再输入以下命令：</p>
+<pre><code>cd /d d:\rclone
+rclone authorize &quot;onedrive&quot;
+</code></pre>
+<p>会出现以下信息：</p>
+<pre><code>C:\Users\Administrator&gt;cd /d d:\rclone
+
+d:\rclone&gt;rclone authorize &quot;onedrive&quot;
+2018/01/23 20:28:56 NOTICE: Config file &quot;C:\\Users\\Administrator\\.config\\rclo
+ne\\rclone.conf&quot; not found - using defaults
+Choose OneDrive account type?
+ * Say b for a OneDrive business account
+ * Say p for a personal OneDrive account
+b) Business
+p) Personal
+b/p&gt; p  #这里选择个人版，你想挂载Business就选择b
+If your browser doesn't open automatically go to the following link: http://127.
+0.0.1:53682/auth  #接下来会弹出浏览器，要求你登录账号进行授权
+Log in and authorize rclone for access
+Waiting for code...
+Got code
+Paste the following into your remote machine ---&gt;
+{&quot;access_token&quot;:&quot;xxxx&quot;}  #请复制{xx}整个内容，后面需要用到
+&lt;---End paste
+</code></pre>
+<h1 id="安装rclone">安装rclone</h1>
+<ul>
+<li>本教程只适用Debian/Ubuntu系统</li>
+<li><strong>1、安装rclone</strong></li>
+</ul>
+<pre><code>wget https://www.moerats.com/usr/shell/rclone_debian.sh &amp;&amp; bash rclone_debian.sh
+</code></pre>
+<p><strong>2、初始化配置</strong></p>
+<pre><code>rclone config
+</code></pre>
+<p>会出现以下信息：</p>
+<pre><code>n) New remote
+s) Set configuration password
+q) Quit config
+n/s/q&gt; n
+name&gt; Rats  #随便填，后面要用到
+Type of storage to configure.
+Choose a number from below, or type in your own value
+ 1 / Amazon Drive
+   \ &quot;amazon cloud drive&quot;
+ 2 / Amazon S3 (also Dreamhost, Ceph, Minio)
+   \ &quot;s3&quot;
+ 3 / Backblaze B2
+   \ &quot;b2&quot;
+ 4 / Box
+   \ &quot;box&quot;
+ 5 / Cache a remote
+   \ &quot;cache&quot;
+ 6 / Dropbox
+   \ &quot;dropbox&quot;
+ 7 / Encrypt/Decrypt a remote
+   \ &quot;crypt&quot;
+ 8 / FTP Connection
+   \ &quot;ftp&quot;
+ 9 / Google Cloud Storage (this is not Google Drive)
+   \ &quot;google cloud storage&quot;
+10 / Google Drive
+   \ &quot;drive&quot;
+11 / Hubic
+   \ &quot;hubic&quot;
+12 / Local Disk
+   \ &quot;local&quot;
+13 / Microsoft Azure Blob Storage
+   \ &quot;azureblob&quot;
+14 / Microsoft OneDrive
+   \ &quot;onedrive&quot;
+15 / Openstack Swift (Rackspace Cloud Files, Memset Memstore, OVH)
+   \ &quot;swift&quot;
+16 / Pcloud
+   \ &quot;pcloud&quot;
+17 / QingCloud Object Storage
+   \ &quot;qingstor&quot;
+18 / SSH/SFTP Connection
+   \ &quot;sftp&quot;
+19 / Webdav
+   \ &quot;webdav&quot;
+20 / Yandex Disk
+   \ &quot;yandex&quot;
+21 / http Connection
+   \ &quot;http&quot;
+Storage&gt; 14  #选择14，Microsoft OneDrive，，注意该序列号会随时变化，看清楚再填
+Microsoft App Client Id - leave blank normally.
+client_id&gt;  #留空
+Microsoft App Client Secret - leave blank normally.
+client_secret&gt;  #留空
+Remote config
+Choose OneDrive account type?
+ * Say b for a OneDrive business account
+ * Say p for a personal OneDrive account
+b) Business
+p) Personal
+b/p&gt; p  #这里选择个人版，你想挂载Business就选择b
+Use auto config?
+ * Say Y if not sure
+ * Say N if you are working on a remote or headless machine
+y) Yes
+n) No
+y/n&gt; n  #选择n
+For this to work, you will need rclone available on a machine that has a web browser available.
+Execute the following on your machine:
+    rclone authorize &quot;onedrive&quot;
+Then paste the result below:
+result&gt; {&quot;access_token&quot;:&quot;&quot;}  #输入之前在客户端授权的内容
+--------------------
+[Rats]
+client_id =
+client_secret =
+token = {&quot;access_token&quot;:&quot;&quot;}
+--------------------
+y) Yes this is OK
+e) Edit this remote
+d) Delete this remote
+y/e/d&gt; y  选择y
+Current remotes:
+
+Name                 Type
+====                 ====
+Rats                 onedrive
+
+e) Edit existing remote
+n) New remote
+d) Delete remote
+r) Rename remote
+c) Copy remote
+s) Set configuration password
+q) Quit config
+e/n/d/r/c/s/q&gt; q  #选择q退出
+
+</code></pre>
+<h1 id="挂载">挂载</h1>
+<p><strong>1、挂载为磁盘</strong></p>
+<pre><code>#新建本地文件夹，路径自己定，即下面的LocalFolder
+mkdir /root/OneDrive
+#挂载为磁盘，下面的DriveName、Folder、LocalFolder参数根据说明自行替换
+rclone mount DriveName:Folder LocalFolder --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000
+</code></pre>
+<p>DriveName为初始化配置填的name，Folder为OneDrive里的文件夹，LocalFolder为VPS上的本地文件夹。<br>
+如果挂载过程中出现<br>
+NOTICE: One drive root 'test': poll-interval is not supported by this remote<br>
+错误，可以无视该错误。</p>
+<p>挂载成功后，输入df -h命令查看即可！<br>
+<img src="https://www.moerats.com/usr/picture/rclone_OD.png" alt="https://www.moerats.com/usr/picture/rclone_OD.png" loading="lazy"></p>
+<p><strong>2、卸载磁盘</strong></p>
+<pre><code>fusermount -qzu LocalFolder
+</code></pre>
+<h1 id="开机自启">开机自启</h1>
+<p>先新建systemd配置文件，适用CentOS 7、Debian 8+、Ubuntu 16+。</p>
+<p>再使用命令：</p>
+<pre><code>#将后面修改成你上面手动运行命令中，除了rclone的全部参数
+command=&quot;mount DriveName:Folder LocalFolder --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000&quot;
+#以下是一整条命令，一起复制到SSH客户端运行
+cat &gt; /etc/systemd/system/rclone.service &lt;&lt;EOF
+[Unit]
+Description=Rclone
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=$(command -v rclone) ${command}
+Restart=on-abort
+User=root
+
+[Install]
+WantedBy=default.target
+EOF
+</code></pre>
+<p>开始启动：</p>
+<pre><code>systemctl start rclone
+</code></pre>
+<p>设置开机自启：</p>
+<pre><code>systemctl enable rclone
+</code></pre>
+<p>其他命令：</p>
+<pre><code>重启：systemctl restart rclone
+停止：systemctl stop rclone
+状态：systemctl status rclone
+</code></pre>
+<p>如果你想挂载多个网盘，那么将<code>systemd</code>配置文件的<code>rclone.service</code>改成<code>rclone1.service</code>即可，重启动什么的同样换成<code>rclone1</code>。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://1981869040.github.io/post/bt-chong-zi-ci-li-lian-jie-xia-zai-gong-ju-aria2-yi-jian-an-zhuang-guan-li/" class="post-title gt-a-link">
+                    BT 种子/磁力链接下载工具：Aria2 一键安装管理
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">杨 - 个人博客</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://1981869040.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
